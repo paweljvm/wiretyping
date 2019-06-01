@@ -38,14 +38,16 @@ class MainActivity : AppCompatActivity() {
 //        } }
 //        soundDetector?.start { captureSoundStream = it}
         val ip =  IpFinder.firstExternalIp()
-        val server = SimpleHttpServer()
+        val server = SimpleHttpServer(64)
         server.registerSimple(Request(Request.Companion.Method.GET,"/"),{
-            "<html><body><h1>Room available = ${!busy} Last sound detection -> ${Date(lastDetection)}</h1><audio controls>\n" +
-                    "  <source src=\"http://$ip:7777/capture.wav\" type=\"audio/wav\"></audio></body></html>"
+            "<html><body><h1>Wiretapping ...</h1><audio controls>\n" +
+                    "  <source src=\"http://$ip:7777/capture.wav\" type=\"audio/wav\"></audio>" +
+                    "</body>" +
+                    "</html>"
         })
         server.register(Request(Request.Companion.Method.GET,"/capture.wav"),AudioWavRequestHandlerCreator::createHandler)
         ip?.also {
-            ipView?.text = "Listening at $it:7777/"
+            ipView?.text = "Wiretapping available -> $it:7777/"
             Thread {server.start(it,7777) }.start()
         }
 

@@ -10,8 +10,8 @@ import java.util.concurrent.Executors
 /**
  * Created by pawel on 2019-05-10.
  */
-class SimpleHttpServer {
-    private val threadPool = Executors.newFixedThreadPool(64)
+class SimpleHttpServer(private val nThreads:Int) {
+    private val threadPool = Executors.newFixedThreadPool(nThreads)
     private val handlersMap = mutableMapOf<Request,(Request,OutputStream)->Unit>()
     fun registerSimple(request:Request, handler:(Request)->String) {
         handlersMap[request]=packSimpleRequestHandler(handler)

@@ -13,7 +13,7 @@ object AudioStreamProvider {
 
     private val bufferSize = 2 * AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT)
 
-    private val audioRecord = AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLE_RATE,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT ,bufferSize)
+    private var audioRecord = AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLE_RATE,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT ,bufferSize)
 
     @Volatile private var listeners =  listOf<(Int,ByteArray)->Unit>()
     @Volatile private var started = false
@@ -48,12 +48,15 @@ object AudioStreamProvider {
     fun registerBufferListener(listener:(Int,ByteArray)->Unit) {
         listeners += listOf(listener)
     }
-
+    fun removeBufferListener(listener:((Int,ByteArray)->Unit)?) {
+        listener?.let {  listeners-=it }
+    }
 
     fun stop() {
         audioRecord.stop()
+        audioRecord.release()
         started = false
     }
-
+    fun isStarted() = started
 
 }
