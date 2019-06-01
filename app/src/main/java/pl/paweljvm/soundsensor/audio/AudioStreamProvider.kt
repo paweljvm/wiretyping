@@ -16,7 +16,7 @@ object AudioStreamProvider {
     private val audioRecord = AudioRecord(MediaRecorder.AudioSource.MIC,SAMPLE_RATE,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT ,bufferSize)
 
     @Volatile private var listeners =  listOf<(Int,ByteArray)->Unit>()
-
+    @Volatile private var started = false
 
 
    val wavHeader = byteArrayOf(
@@ -31,14 +31,18 @@ object AudioStreamProvider {
     )
 
     fun start() {
-        audioRecord.startRecording()
-        Thread {
-            var currentBuffer = ByteArray(bufferSize)
-            while(true) {
-               val size = audioRecord.read(currentBuffer,0, bufferSize)
-               listeners.forEach { it(size,currentBuffer)}
-            }
-        } .start()
+        if(!started) {
+            started=true
+            audioRecord.startRecording()
+            Thread {
+                var currentBuffer = ByteArray(bufferSize)
+                while(true) {
+                    val size = audioRecord.read(currentBuffer,0, bufferSize)
+                    listeners.forEach { it(size,currentBuffer)}
+                }
+            } .start()
+        }
+
 
     }
     fun registerBufferListener(listener:(Int,ByteArray)->Unit) {
@@ -48,6 +52,7 @@ object AudioStreamProvider {
 
     fun stop() {
         audioRecord.stop()
+        started = false
     }
 
 
