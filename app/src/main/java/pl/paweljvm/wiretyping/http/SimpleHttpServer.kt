@@ -1,4 +1,4 @@
-package pl.paweljvm.soundsensor.http
+package pl.paweljvm.wiretyping.http
 
 import android.util.Log
 import java.io.*
@@ -13,6 +13,8 @@ import java.util.concurrent.Executors
 class SimpleHttpServer(private val nThreads:Int) {
     private val threadPool = Executors.newFixedThreadPool(nThreads)
     private val handlersMap = mutableMapOf<Request,(Request,OutputStream)->Unit>()
+    private var socket:ServerSocket? = null
+    @Volatile var started=false
     fun registerSimple(request:Request, handler:(Request)->String) {
         handlersMap[request]=packSimpleRequestHandler(handler)
     }
@@ -50,14 +52,24 @@ class SimpleHttpServer(private val nThreads:Int) {
 
     fun start(ip:String,port:Int) {
         val addr = InetAddress.getByName(ip)
-        var socket = ServerSocket(port,0,addr)
-        while(true) {
-            var clientSocket = socket.accept()
-            threadPool.submit({
-                handleClient(clientSocket)
-            })
+        socket = ServerSocket(port,0,addr)
+        started=true
+        while(started) {
+            var clientSocket = socket?.accept()
+            clientSocket?.let {
+                threadPool.submit({
+                    handleClient(it)
+                })
+            }
+
         }
     }
+    fun stop() {
+        started = false
+        threadPool.shutdownNow()
+        socket?.close()
+    }
+
     private fun handleClient(clientSocket:Socket) {
         var reader:BufferedReader? = null
         var out:OutputStream? = null

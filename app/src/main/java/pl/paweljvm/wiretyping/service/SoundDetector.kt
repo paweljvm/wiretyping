@@ -1,6 +1,5 @@
-package pl.paweljvm.soundsensor.service
+package pl.paweljvm.wiretyping.service
 
-import android.media.AudioRecord
 import android.media.MediaRecorder
 import android.net.LocalServerSocket
 import android.net.LocalSocket

@@ -1,4 +1,4 @@
-package pl.paweljvm.soundsensor.http
+package pl.paweljvm.wiretyping.http
 
 import java.net.Inet4Address
 import java.net.NetworkInterface

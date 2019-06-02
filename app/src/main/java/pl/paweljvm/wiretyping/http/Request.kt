@@ -1,6 +1,4 @@
-package pl.paweljvm.soundsensor.http
-
-import java.util.*
+package pl.paweljvm.wiretyping.http
 
 /**
  * Created by pawel on 2019-05-10.

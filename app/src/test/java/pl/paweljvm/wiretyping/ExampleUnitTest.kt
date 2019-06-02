@@ -1,4 +1,4 @@
-package pl.paweljvm.soundsensor
+package pl.paweljvm.wiretyping
 
 import org.junit.Test
 
