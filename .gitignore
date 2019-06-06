@@ -9,3 +9,4 @@
 .externalNativeBuild
 gradlew
 gradle.bat
+gradle
